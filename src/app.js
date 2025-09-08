@@ -1,49 +1,27 @@
 const express = require('express');
+const { adminAuth, userAuth } = require('./middlewares/auth');
 
 const app = express();
 
-// middlewares = function executed between incoming request to request handlers are known as middlewares.
-
-// when you call any api it firstly goes through the middleware chain and then when it find the request
-// handler then it will sends back to the response.
-
-// GET (/users) => middleware chain => request handlers (sends response back).
-
-app.use('/', (req, res, next) => {
-  console.log('Starting the checks');
-  next();
+// app.use('/admin', adminAuth);
+app.use('/getAllUsers', (req, res) => {
+  throw new Error('Users not found.');
 });
 
-app.get('/profile', (req, res, next) => {
-  console.log('Preparing the data.');
-  res.send('Hello From profile page.');
+app.use('/', (err, req, res, next) => {
+  if (err) {
+    res.status(500).send('Something went wrong');
+  }
 });
 
-// different ways to pass route handlers (some can be in array, some can be in comma seperation);
-// app.use('/routes', [rh, rh1, rh2], rh3, ...)
+app.get('/users', userAuth, (req, res, next) => {
+  console.log('Its done executing');
+  res.send('All the users');
+});
 
-// with app.use you can handle any type of request whether its GET, PUT, POST, DELETE, or PATCH
-// app.use(
-//   '/profile',
-//   [(req, res, next) => {
-//     console.log('Preparing data...');
-//     next();
-//     // res.send('starting data fetching');
-//   },
-//   (req, res, next) => {
-//     console.log('sending...')
-//     next();
-//   },
-//   (req, res, next) => {
-//     console.log('taking some more time....');
-//     next();
-//   }],
-//   (req, res) => {
-//     const data = { firstName: 'Yagyam', lastName: 'Patidar' };
-//     res.send(data);
-//     console.log('finally data is sent');
-//   }
-// );
+app.get('/admin/getAllData', (req, res, next) => {
+  res.send('Send all the admins data');
+});
 
 const PORT = 3000;
 app.listen(PORT, () => {
