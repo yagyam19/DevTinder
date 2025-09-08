@@ -2,39 +2,48 @@ const express = require('express');
 
 const app = express();
 
-// app.use('/profile', (req, res) => {
-//   res.send('profile is here');
-// })
+// middlewares = function executed between incoming request to request handlers are known as middlewares.
 
-// ********* Advanced routing concept
-// app.get('/ab?c', (req, res) => {
-//   res.send({ firstName: 'Yagyam', lastName: 'Patidar', rank: 10 });
-// });
+// when you call any api it firstly goes through the middleware chain and then when it find the request
+// handler then it will sends back to the response.
 
-// Matches both /abc and /bc
-// app.get('ab+c', (req, res) => {
-//   res.send("Matched abc or bc");
-// });
+// GET (/users) => middleware chain => request handlers (sends response back).
 
-// this will match all the get api calls to this route.
-app.get('/profile/:userId', (req, res) => {
-  console.log(req.query, req.params);
-  res.send({ firstName: 'Yagyam', lastName: 'Patidar', rank: 10 });
+app.use('/', (req, res, next) => {
+  console.log('Starting the checks');
+  next();
 });
 
-app.post('/profile', (req, res) => {
-  res.send({ message: 'Record created successfully.' });
+app.get('/profile', (req, res, next) => {
+  console.log('Preparing the data.');
+  res.send('Hello From profile page.');
 });
 
-app.delete('/profile', (req, res) => {
-  res.send({ message: 'Profile deleted successfully.' });
-});
+// different ways to pass route handlers (some can be in array, some can be in comma seperation);
+// app.use('/routes', [rh, rh1, rh2], rh3, ...)
 
-// this will match to all the http method API calls to /test
-app.use('/test', (req, res) => {
-  // request handler
-  res.send('Hello Dev Tinder');
-});
+// with app.use you can handle any type of request whether its GET, PUT, POST, DELETE, or PATCH
+// app.use(
+//   '/profile',
+//   [(req, res, next) => {
+//     console.log('Preparing data...');
+//     next();
+//     // res.send('starting data fetching');
+//   },
+//   (req, res, next) => {
+//     console.log('sending...')
+//     next();
+//   },
+//   (req, res, next) => {
+//     console.log('taking some more time....');
+//     next();
+//   }],
+//   (req, res) => {
+//     const data = { firstName: 'Yagyam', lastName: 'Patidar' };
+//     res.send(data);
+//     console.log('finally data is sent');
+//   }
+// );
 
 const PORT = 3000;
 app.listen(PORT, () => {
