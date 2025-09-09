@@ -1,29 +1,40 @@
 const express = require('express');
-const { adminAuth, userAuth } = require('./middlewares/auth');
-
+const connectDB = require('./config/database');
 const app = express();
+const User = require('./models/user');
 
-// app.use('/admin', adminAuth);
-app.use('/getAllUsers', (req, res) => {
-  throw new Error('Users not found.');
-});
+app.post('/signup', async (req, res) => {
+  const userObj = {
+    firstName: 'Yashashvi',
+    lastName: 'Jaiswal',
+    email: 'yashashvi@jaiswal.com',
+    age: 30,
+    gender: 'Male',
+    password: 'User@123',
+  };
 
-app.use('/', (err, req, res, next) => {
-  if (err) {
-    res.status(500).send('Something went wrong');
+  // create a new instance of user model
+  const user = new User(userObj);
+  try {
+    await user.save();
+    res.send('Sign up successfull!');
+  } catch (error) {
+    console.log('🚀 ~ error:', error);
+    res.status(400).send('Error signing up the user.', error);
   }
 });
 
-app.get('/users', userAuth, (req, res, next) => {
-  console.log('Its done executing');
-  res.send('All the users');
-});
-
-app.get('/admin/getAllData', (req, res, next) => {
-  res.send('Send all the admins data');
+app.use('/', (err, req, res, next) => {
+  if (err) res.send('Something went wrong.');
+  next();
 });
 
 const PORT = 3000;
-app.listen(PORT, () => {
-  console.log('Server is successfully listening on port ' + PORT);
-});
+connectDB()
+  .then((res) => {
+    console.log('DB connect successfully.');
+    app.listen(PORT, () => {
+      console.log('Server is successfully listening on port ' + PORT);
+    });
+  })
+  .catch((err) => console.log('Connection to DB failed.', err));
