@@ -1,5 +1,9 @@
 const express = require('express');
-const { authMiddleware } = require('../middlewares/auth');
+const {
+  authMiddleware,
+  comparePassword,
+  encryptPassword,
+} = require('../middlewares/auth');
 const AppError = require('../utils/AppError');
 const { validateProfileData } = require('../utils/validation');
 const User = require('../models/user');
@@ -32,9 +36,30 @@ profileRouter.patch(
         new: true,
         runValidators: true,
       });
-      res
+      return res
         .status(200)
         .json({ message: 'Profile updated successfully', user: data });
+    } catch (error) {
+      console.log('🚀 ~ error:', error);
+      return next(new AppError(error));
+    }
+  }
+);
+
+// do not ever spread the data or doc coming from the mongoose
+// as it will just spread the mongoose properties not the actual doc fields.
+profileRouter.post(
+  '/profile/password',
+  authMiddleware,
+  comparePassword,
+  async (req, res, next) => {
+    try {
+      const user = req.user;
+      const { newPassword } = req.body;
+      const encryptedPassword = await encryptPassword(newPassword);
+      user.password = encryptedPassword;
+      await user.save();
+      return res.status(200).json({ message: 'Password updated successfully' });
     } catch (error) {
       console.log('🚀 ~ error:', error);
       return next(new AppError(error));

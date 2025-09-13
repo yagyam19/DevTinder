@@ -1,4 +1,6 @@
 =====================================  DevTinder API's  ===================================================
+NOTE: /**** Both the 7th and 8th api can be done using a single api in two ways either i extract the status 
+from originalUrl or make the status dynamic. ****/
 
 #            API                                      METHOD
 auth router

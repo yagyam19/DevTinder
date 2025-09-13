@@ -1,6 +1,5 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
 const validator = require('validator');
-const { Schema } = mongoose;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -19,7 +18,7 @@ const userSchema = new Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
+      unique: true, // mongo db makes all the unique properties as index by default so you dont need to explicitly mention it.
       trim: true,
       lowercase: true,
       validate(value) {
@@ -47,13 +46,13 @@ const userSchema = new Schema(
     },
     imageUrl: {
       type: String,
-      default: '',
+      default: null,
       required: false,
-      validate(value) {
-        if (!validator.isURL(value)) {
-          throw new Error('Please enter a valid image url: ', value);
-        }
-      },
+      // validate(value) {
+      //   if (!validator.isURL(value)) {
+      //     throw new Error('Please enter a valid image url: ', value);
+      //   }
+      // },
     },
     about: {
       type: String,
@@ -70,6 +69,9 @@ const userSchema = new Schema(
 );
 
 // const User = mongoose.model('User', userSchema);
+
+// 👉  indexes speed up read queries.
+userSchema.index({ firstName: 1, lastName: 1 });
 
 userSchema.methods.getJWT = async function () {
   const user = this;
@@ -88,4 +90,5 @@ userSchema.methods.verifyPassword = async function (passwordInputByUser) {
   return isPasswordValid;
 };
 
-module.exports = mongoose.model('User', userSchema);
+const UserModel = model('User', userSchema);
+module.exports = UserModel;

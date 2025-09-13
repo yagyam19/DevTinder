@@ -8,12 +8,14 @@ const userRouter = express.Router();
 userRouter.get('/user/feed', async (req, res, next) => {
   try {
     const users = await User.find({});
-    res
+    return res
       .status(200)
       .send({ users: users, message: 'Users fetched successfully!' });
   } catch (error) {
     console.log('🚀 ~ error:', error);
-    next(new AppError({ message: 'Error in getting the users ' + error }));
+    return next(
+      new AppError({ message: 'Error in getting the users ' + error })
+    );
   }
 });
 

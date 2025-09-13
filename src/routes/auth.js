@@ -19,10 +19,10 @@ authRouter.post('/signup', validateSignupData, async (req, res) => {
   try {
     const user = new User(userObj);
     await user.save();
-    res.send('Sign up successfull!');
+    return res.send('Sign up successfull!');
   } catch (error) {
     console.log('🚀 ~ error:', error);
-    next(new AppError('Error signing up the user.' + error));
+    return next(new AppError('Error signing up the user.' + error));
   }
 });
 

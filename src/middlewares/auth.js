@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const validator = require('validator');
 const { defaultBcryptSalt } = require('../config');
 const AppError = require('../utils/AppError');
 
@@ -40,8 +41,25 @@ const encryptPassword = async (passwordInputByUser) => {
   return encryptedPassword;
 };
 
+const comparePassword = async (req, res, next) => {
+  const user = req.user;
+  const { oldPassword, newPassword } = req.body;
+  const isPasswordSame = await bcrypt.compare(oldPassword, user.password);
+  if (!isPasswordSame) {
+    return next(new AppError('Current password is not same'));
+  }
+  const isPasswordStrong = validator.isStrongPassword(newPassword);
+  if (!isPasswordStrong) {
+    return next(
+      new AppError('Password is too common, please enter a strong password')
+    );
+  }
+  next();
+};
+
 module.exports = {
   authMiddleware,
   generateAuthToken,
   encryptPassword,
+  comparePassword,
 };
