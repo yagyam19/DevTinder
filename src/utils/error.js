@@ -1,4 +1,4 @@
-const ApiError = require('./ApiError');
+const ApiError = require('./AppError');
 
 class ValidationError extends ApiError {
   constructor(message = 'Validation failed') {
