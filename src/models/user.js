@@ -49,15 +49,16 @@ const userSchema = new Schema(
       type: String,
       default: '',
       required: false,
-      // validate(value) {
-      //   if (!validator.isURL(value)) {
-      //     throw new Error('Please enter a valid image url: ', value);
-      //   }
-      // },
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error('Please enter a valid image url: ', value);
+        }
+      },
     },
     about: {
       type: String,
       default: '',
+      maxLength: 100,
       required: false,
     },
     skills: {

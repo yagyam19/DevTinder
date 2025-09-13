@@ -1,0 +1,27 @@
+=====================================  DevTinder API's  ===================================================
+
+#            API                                      METHOD
+auth router
+1.           /signup                                  (POST)  create new user to devtinder
+2.           /login                                   (POST)  logging in the user to devtinder
+3.           /logout                                  (POST)  logging out the user
+
+profile router
+4.           /profile/view                            (GET)   get the user data
+5.           /profile/edit                            (PATCH) update the user data
+6.           /profile/password                        (PATCH) update the user password
+
+connections request router
+7.           /request/send/interested/:userId         (POST)  share interest in user
+8.           /request/send/ignore/:userId             (POST)  ignore the user
+9.           /request/review/accepted/:userId         (POST)  accept other user invitation
+10.          /request/review/rejected/:userId         (POST)  reject other user invitation
+
+//user router
+11.          /user/connections                        (GET)   get all connections
+12.          /user/received-requests                  (GET)   get all received requests
+13.          /user/feed                               (GET)   get all the users
+
+
+
+
