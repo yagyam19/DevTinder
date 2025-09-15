@@ -56,11 +56,59 @@ requestRouter.post(
       return res.status(200).json({
         message: hasIgnored
           ? `${req.user.firstName} ignored ${isValidUser.firstName}`
-          : 'Connection request sent successfully.',
+          : `${req.user.firstName} has sent request to ${isValidUser.firstName}`,
       });
     } catch (error) {
       console.log('🚀 ~ error:', error);
       return next(new AppError('Error: ', +error.message));
+    }
+  }
+);
+
+requestRouter.post(
+  '/request/review/:status/:requestId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const loggedInUser = req.user;
+      const { status, requestId } = req.params;
+
+      const allowedStatuses = ['accepted', 'rejected'];
+      if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Please send a valid status' });
+      }
+
+      // request id should be valid
+      // validate the status
+      // request id is valid or it can accept the connection request or not.
+      // accept connection request logic
+      // the status should be interested then only we need to do all the stuff
+      // toUser must be login user ( if Yagyam has sent request to dhoni then dhoni should be the one who accepts it not yagyam)
+
+      const isValidRequestId = await ConnectionRequestModel.findOne({
+        _id: requestId,
+        toUserId: loggedInUser?._id,
+        status: 'interested',
+      });
+      if (!isValidRequestId) {
+        return res
+          .status(400)
+          .json({ message: 'Connection request not found' });
+      }
+
+      const updatedData = await ConnectionRequestModel.findByIdAndUpdate(
+        requestId,
+        { status },
+        { runValidators: true, new: true }
+      );
+
+      return res.status(200).json({
+        message: 'Connection Request accepted successfully',
+        data: updatedData,
+      });
+    } catch (error) {
+      console.log('🚀 ~ error:', error);
+      return next(new AppError(error));
     }
   }
 );

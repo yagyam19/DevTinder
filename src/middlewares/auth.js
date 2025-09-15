@@ -19,7 +19,7 @@ const authMiddleware = async (req, res, next) => {
       req.user = user;
       return next();
     }
-    return next(new AppError('Invalid request.'));
+    return next(new AppError('Token not valid.'));
   } catch (error) {
     console.log('🚀 ~ authMiddleware ~ error:', error);
     return next(new AppError('Invalid request.'));
